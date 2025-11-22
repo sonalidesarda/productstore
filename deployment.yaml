@@ -16,6 +16,9 @@ spec:
       - name: productstore
         image: ghcr.io/sonalidesarda/productstore:latest
         imagePullPolicy: Always
+        env:
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "host.docker.internal:9092"
         ports:
         - containerPort: 8080
 ---
