@@ -54,7 +54,7 @@ spec:
         image: solr:9
         ports:
         - containerPort: 8983
-        command:
+        args:
           - solr-precreate
           - products
 ---
@@ -86,8 +86,8 @@ spec:
     spec:
       containers:
       - name: product-search-worker
-        image: product-search-worker:latest
-        imagePullPolicy: Never
+        image: ghcr.io/sonalidesarda/product-search-worker:latest
+        imagePullPolicy: Always
         env:
         - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
           value: "host.docker.internal:9092"
