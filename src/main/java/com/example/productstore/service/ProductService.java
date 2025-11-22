@@ -8,14 +8,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.kafka.core.KafkaTemplate;
+
 @Service
 public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private KafkaTemplate<String, Product> kafkaTemplate;
+
     public Product createProduct(Product product) {
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        kafkaTemplate.send("products", savedProduct);
+        return savedProduct;
     }
 
     public List<Product> getAllProducts() {
