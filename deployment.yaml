@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productstore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productstore
+  template:
+    metadata:
+      labels:
+        app: productstore
+    spec:
+      containers:
+      - name: productstore
+        image: ghcr.io/sonalidesarda/productstore:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: productstore-service
+spec:
+  selector:
+    app: productstore
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
