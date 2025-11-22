@@ -34,3 +34,62 @@ spec:
       port: 80
       targetPort: 8080
   type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: solr
+  template:
+    metadata:
+      labels:
+        app: solr
+    spec:
+      containers:
+      - name: solr
+        image: solr:9
+        ports:
+        - containerPort: 8983
+        command:
+          - solr-precreate
+          - products
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: solr-service
+spec:
+  selector:
+    app: solr
+  ports:
+    - protocol: TCP
+      port: 8983
+      targetPort: 8983
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-search-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-search-worker
+  template:
+    metadata:
+      labels:
+        app: product-search-worker
+    spec:
+      containers:
+      - name: product-search-worker
+        image: product-search-worker:latest
+        imagePullPolicy: Never
+        env:
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "host.docker.internal:9092"
+        - name: SOLR_URL
+          value: "http://solr-service:8983/solr"
